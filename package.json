@@ -7,11 +7,13 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "start": "node server.js"
+    "start": "node server/index.js"
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "morgan": "^1.9.1",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1"
