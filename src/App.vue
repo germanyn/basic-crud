@@ -1,31 +1,198 @@
-<template>
+<template functional>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div class="container">
+      <router-view/>
     </div>
-    <router-view/>
   </div>
 </template>
 
+<script>
+export default {}
+</script>
+
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
+
+*:not(hr) {
+  margin: 0px;
+  padding: 0px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-#nav a {
+form, fieldset {
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset {
+  border: none;
+  margin-inline-start: unset;
+  padding-block-start: unset;
+  margin-inline-end: unset;
+  padding-inline-start: unset;
+  padding-inline-end: unset;
+  padding-block-end: unset;
+  min-inline-size: unset;
+}
+
+button,
+input[type="button"] {
+  border: 1px solid black;
+  border-radius: 0.25em;
+  height: 36px;
+  background-color: unset;
+  margin-top: 8px;
+  text-transform: uppercase;
+  min-width: 72px;
+  margin-left: unset;
+  margin-right: unset;
+  padding: 2px 8px;
+}
+
+button.block,
+input[type="button"].block {
+  margin-right: initial;
+  margin-left: initial;
+}
+
+button.icon,
+input[type="button"].icon {
+  margin: 0;
+  height: 36px;
+  width: 36px;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 100%;
+}
+
+button.rounded,
+input[type="button"].rounded {
+  border-radius: 12px;
+}
+
+button.small,
+input[type="button"].small {
+  height: 24px;
+  min-width: 24px;
+}
+
+button:focus,
+input[type="button"]:focus {
+  border-color: blue;
+  outline: none;
+}
+
+button.primary,
+input[type="button"].primary {
+  background-color: lightblue;
+}
+
+button.flat,
+input[type="button"].flat {
+  border: none;
+}
+
+label {
   font-weight: bold;
-  color: #2c3e50;
+  margin-top: 8px;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+input[type="text"],
+input[type="password"],
+input[type="search"],
+input[type="email"],
+input[type="number"] {
+  margin-top: 8px;
+  padding: 4px;
+  box-shadow: none;
+  border-radius: 4px;
+  height: 36px;
+  font-size: 16px;
+  flex: 1;
 }
+
+.container {
+  margin: 12px 8px;
+}
+
+@media screen and (min-width: 600px) {
+  .container {
+    max-width: 980px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.card {
+  border: 1px solid black;
+  border-radius: 0.25em;
+  padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.login, .register {
+  width: 300px;
+  margin: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.d-flex {
+  flex: 1;
+}
+
+.d-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.d-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.a-center {
+  align-items: center
+}
+
+.a-start {
+  align-items: start
+}
+
+.a-space-between{
+  justify-content: space-between;
+}
+
+.j-center {
+  justify-content: center
+}
+
+.flex {
+  flex: 1;
+}
+
+.bg-green {
+  background-color: green;
+  color: white;
+}
+
+.no-shrink {
+  flex-shrink: 0;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
 </style>
