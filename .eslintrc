@@ -1,0 +1,16 @@
+{
+	"root": true,
+	"env": { "node": true },
+	"extends": ["plugin:vue/essential", "@vue/airbnb"],
+	"rules": { "semi": [2, "never"] },
+	"parserOptions": { "parser": "babel-eslint" },
+	"overrides": [
+		{
+			"files": [
+				"**/__tests__/*.{j,t}s?(x)",
+				"node_modules"
+			],
+			"env": { "jest": true }
+		}
+	]
+}

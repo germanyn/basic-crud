@@ -10,6 +10,7 @@
         id="username"
         type="text"
         v-model="credentials.username"
+        required
       >
       <label for="password" >
         Password
@@ -19,8 +20,14 @@
         id="password"
         type="password"
         v-model="credentials.password"
+        required
       >
       <button class="primary">Login</button>
+      <div class="text-blue text-underline pt-2 text-center cursor-pointer"
+        @click="() => $router.push('/register')"
+      >
+        Or sign up here
+      </div>
     </form>
   </div>
 </template>
@@ -37,13 +44,27 @@ export default {
     }
   },
   methods: {
-    login() {
+    validate() {
+      if (!this.registry.username) {
+        alert("Username required.")
+        document.getElementById('username').focus()
+        return false
+      }
+
+      if (!this.registry.password) {
+        alert("Password required.")
+        document.getElementById('password').focus()
+        return false
+      }
+      return true
+    },
+    async login() {
       this.sending = true
       try {
-        const result = this.$store.dispatch('login')
+        await this.$store.dispatch('login', this.credentials)
         this.$router.push('/products')
       } catch(error) {
-        alert(error)
+        alert(error.response.data || error.message)
       } finally {
         this.sending = false
       }

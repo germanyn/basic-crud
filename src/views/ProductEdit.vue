@@ -2,7 +2,9 @@
   <div class= "card">
     <form @submit.prevent="saveProduct" class="product-form">
       <h1 class="text-center"> {{ id ? '' : 'New  ' }} Product</h1>
-      <fieldset :disabled="sending">
+      <div v-if="id && loading" class="text-center"> Loading... </div>
+      <div v-else-if="error" class="text-center"> {{ error }} </div>
+      <fieldset v-else :disabled="sending">
         <div class="d-column">
           <label for="username">
             Name
@@ -12,6 +14,7 @@
             id="name"
             type="text"
             v-model="product.name"
+            required
           >
           <label for="username">
             Price
@@ -20,15 +23,16 @@
             ref="price"
             id="price"
             type="number"
-            step="0.1"
+            step="0.01"
             v-model="product.price"
+            required
           >
           <label for="image">
             Image
           </label>
           <div class="image-wrapper">
             <img
-              :src="product.image ||require('@/assets/no-image.png')"
+              :src="product.image || require('@/assets/no-image.png')"
               alt=""
             >
           </div>
@@ -48,7 +52,7 @@
             @change="upload"
           >
           <div class="d-row actions a-space-between">
-            <button class="flat" @click="$router.go(-1)">
+            <button class="flat" @click="$router.push('/products')">
               Cancel
             </button>
             <button class="bg-green">
@@ -71,15 +75,30 @@ export default {
   },
   data() {
     return {
+      error: undefined,
+      loading: true,
       uploading: false,
       sending: false,
       product: {
         name: undefined,
-        image: undefined
+        image: undefined,
+        price: undefined,
       }
     }
   },
+  created() {
+    if (this.id) this.fetchProduct()
+    else this.loading = false
+  },
   methods: {
+    async fetchProduct() {
+      try {
+        this.product = await this.$store.dispatch('getProduct', this.id)
+        this.$nextTick(()=>this.loading = false)
+      } catch(error) {
+        this.error = error.response.data || error.message
+      }
+    },
     readFileAsync: async (file) =>{
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -95,22 +114,47 @@ export default {
       this.uploading = true
       try {
         const base64File = await this.readFileAsync(file)
-        console.log(base64File)
         this.product.image = base64File
       } catch (error) {
-        alert(error)
+        alert(error.message)
       } finally {
         this.uploading = false
       }
     },
-    saveProduct() {
+    validate() {
+      if (!this.product.name) {
+        alert("Name required.")
+        document.getElementById('name').focus()
+        return false
+      }
+
+      if (!this.product.price) {
+        alert("Price required.")
+        document.getElementById('price').focus()
+        return false
+      }
+
+      if (this.product.price <= 0) {
+        alert("Price needs to be greater than 0.")
+        document.getElementById('price').focus()
+        return false
+      }
+
+      return true
+    },
+    async saveProduct() {
+
+      if(!this.validate()) return
+
       this.sending = true
       try {
-        const response = this.id
-          ? this.$store.dispatch('createProduct')
-          : this.$store.dispatch('updateProduct')
+        const { id, product } = this
+        id
+          ? await this.$store.dispatch('updateProduct', { id, product })
+          : await this.$store.dispatch('createProduct', product)
+        this.$router.push('/products')
       } catch(error) {
-        alert(error)
+        alert(error.message)
       } finally {
         this.sending = false
       }

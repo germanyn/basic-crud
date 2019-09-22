@@ -2,11 +2,14 @@ const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
 const api = require('./api')
+const auth = require('./middlewares/auth')
+require('./database')
 
 const app = express()
 app.use(express.json())
 app.use(morgan('combine'))
 app.use(cors())
+app.use(auth);
 
 app.use('/api', api)
 

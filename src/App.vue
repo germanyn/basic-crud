@@ -12,6 +12,17 @@ export default {}
 
 <style>
 
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
+
 *:not(hr) {
   margin: 0px;
   padding: 0px;
@@ -46,6 +57,7 @@ input[type="button"] {
   margin-left: unset;
   margin-right: unset;
   padding: 2px 8px;
+  cursor: pointer;
 }
 
 button.block,
@@ -111,10 +123,10 @@ input[type="number"] {
 }
 
 .container {
-  margin: 12px 8px;
+  margin: 18px 8px;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
   .container {
     max-width: 980px;
     margin-right: auto;
@@ -193,6 +205,37 @@ input[type="number"] {
 
 .ml-auto {
   margin-left: auto;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.pt-2 {
+  padding-top: 4px;
+}
+
+.px-0 {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.text-blue {
+  color: grey;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.overflow-ellipsis {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.p-relative {
+  position: relative;
 }
 
 </style>

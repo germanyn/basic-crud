@@ -1,7 +1,8 @@
 <template>
   <div class="card">
-    <div class="d-column flex">
+    <div class="d-column flex p-relative">
       <h1 class="text-center">Products Catalog</h1>
+      <button class="ml-auto" @click="$store.dispatch('logout')">Logout 🔓</button>
       <div class="d-row a-center j-center">
         <div>
           <input
@@ -9,13 +10,15 @@
             type="search"
             v-model="search"
             placeholder="Search..."
-          >
+          />
         </div>
         <button
           class="bg-green"
           id="search"
           @click="() => $router.push('/products/new')"
-        >NEW</button>
+        >
+          NEW
+        </button>
       </div>
       <div class="listing text-center">
         <div v-if="loading">
@@ -28,42 +31,52 @@
           <i>No ocurrences for "{{ search }}"...</i>
         </div>
         <div v-else class="product-grid">
-          <div class="grid-header">
-            <div> ID </div>
+          <div class="grid-header j-center">
+            <div class="">📷</div>
           </div>
           <div class="grid-header">
-            <div> 📷 </div>
+            <div class="price-cell">Price</div>
           </div>
           <div class="grid-header">
-            <div class="price-cell"> Price </div>
+            <div>Name</div>
           </div>
           <div class="grid-header">
-            <div> Name </div>
+            <div class="actions-cell m-auto">Actions</div>
           </div>
-          <div class="grid-header">
-            <div class="actions-cell m-auto"> Actions </div>
-          </div>
-          <template v-for="product in fileteredProducts">
-            <div :key="`code-${product.id}`">
-              {{ product.id }}
-            </div>
-            <div :key="`image-${product.id}`">
+          <template v-for="(product, index) in fileteredProducts">
+            <div :key="`image-${product.id}`" class="j-center">
               <img
-                :src="product.image"
+                :src="product.image || require('@/assets/no-image.png')"
                 alt=""
-                class="product-image"
-              >
+                class="product-image cursor-pointer"
+                @click="openImage(product.image)"
+              />
             </div>
-            <div :key="`price-${product.id}`">
-              <div class="price-cell">{{ product.price }}</div>
+            <div :key="`price-${product.id}`" class="a-space-between">
+              <div>U$&nbsp;</div>
+              <div class="price-cell">{{ formatMonetary(product.price) }}</div>
             </div>
-            <div :key="`name-${product.id}`">
+            <div :key="`name-${product.id}`" class="overflow-ellipsis">
               {{ product.name }}
             </div>
             <div :key="`actions-${product.id}`" class="actions-cell">
               <div class="actions-row">
-                <button class="small">✏️</button>
-                <button class="small">❌</button>
+                <button
+                  class="small px-0"
+                  @click="$router.push(`/products/${product.id}`)"
+                > ✏️ </button>
+                <button
+                  class="small px-0"
+                  @click="deleteProduct(product.id)"
+                > ❌ </button>
+                <button
+                  class="small px-0"
+                  @click="toggleUp(index)"
+                > ⬆️ </button>
+                <button
+                  class="small px-0"
+                  @click="toggleDown(index)"
+                > ⬇️ </button>
               </div>
             </div>
           </template>
@@ -73,43 +86,98 @@
   </div>
 </template>
 
-<script>
-import { includesSubstring } from '@/utils/index.js'
+<script lang="javascript">
+import {
+  includesSubstring,
+  formatMonetary,
+} from '@/utils/index'
 
 export default {
   data() {
     return { 
       loading: false,
+      sending: false,
       search: '',
-      products: [
-        {
-          id: 1,
-          name: 'Broom',
-          image: 'https://cdn.leroymerlin.com.br/products/brilhus_vassoura_mult_c_cabo_1x15_89975431_97d3_300x300.jpg',
-          price: 12.5,
-        },
-        {
-          id: 2,
-          name: 'Pencil',
-          image: 'https://cdn.leroymerlin.com.br/products/brilhus_vassoura_mult_c_cabo_1x15_89975431_97d3_300x300.jpg',
-          price: 2.8,
-        },
-      ],
+      products: [],
     }
+  },
+  created() {
+    this.fectchProducts()
+  },
+  methods: {
+    formatMonetary,
+    async fectchProducts() {
+      this.loading = true
+      try {
+        this.products = await this.$store.dispatch('getProducts')
+      } catch (error) {
+        alert(error.message)
+      } finally {
+        this.loading = false
+      }
+    },
+    async deleteProduct(id) {
+      const confirm = window.confirm("Remove this product? (it's irreversible)")
+      if (!confirm) return
+      this.sending = true
+      try {
+        await this.$store.dispatch('deleteProduct', id)
+        const index = this.products.findIndex(product => product.id === id)
+        if (!~-1) this.products.splice(index, 1)
+      } catch (error) {
+        alert(error.response.data)
+      } finally {
+        this.sending = false
+      }
+    },
+    toggleUp(index) {
+      if (index <= 0) return
+      this.toggleRows(index - 1, index)
+    },
+    toggleDown(index) {
+      if (index == this.fileteredProducts.length - 1) return
+      this.toggleRows(index, index + 1)
+    },
+    async toggleRows(indexA, indexB) {
+      const { fileteredProducts } = this;
+      const [ productA, productB ] = [
+        fileteredProducts[indexA],
+        fileteredProducts[indexB],
+      ]
+      ;[productA.sequence, productB.sequence] = [productB.sequence, productA.sequence ]
+      Promise.all([
+        this.$store.dispatch('updateProduct', {
+          id: productA.id,
+          product: productA,
+        }),
+        this.$store.dispatch('updateProduct', {
+          id: productB.id,
+          product: productB,
+        }),
+      ])
+    },
+    openImage(url) {
+      const image = new Image();
+      image.src = url;
+
+      const w = window.open("");
+      w.document.write(image.outerHTML);
+      window.open(image)
+    },
   },
   computed: {
     fileteredProducts() {
       return this.products
-        .filter(({name}) => includesSubstring(name, this.search))
-    } 
-  }
+        .filter(({ name }) => includesSubstring(name, this.search))
+        .sort((productA, productB) => productA.sequence - productB.sequence)
+    },
+  },
 }
 </script>
 
 <style scoped>
-
 #search {
-  margin-left: 2px; 
+  margin-left: 2px;
 }
 
 .listing {
@@ -118,28 +186,28 @@ export default {
 
 .product-grid {
   display: grid;
-  grid-template-columns: 32px 32px auto 1fr 85px;
+  grid-template-columns: 30px auto 1fr auto;
   align-content: space-around;
 }
 
 .product-grid > * {
-  border-right: 1px solid rgba(0,0,0,0.6);
-  border-bottom: 1px solid rgba(0,0,0,0.6);
+  border-right: 1px solid rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
   align-items: center;
   display: flex;
 }
 
-.product-grid > *:nth-child(5n+1) {
+.product-grid > *:nth-child(4n + 1) {
   border-left: none;
 }
-.product-grid > *:nth-child(5n+5) {
+.product-grid > *:nth-child(4n + 4) {
   border-right: none;
 }
-.product-grid > *:nth-child(-n+5) {
+.product-grid > *:nth-child(-n + 4) {
   border-top: none;
 }
 
-.product-grid > *:nth-last-child(-n+5) {
+.product-grid > *:nth-last-child(-n + 4) {
   border-bottom: none;
 }
 
@@ -153,23 +221,30 @@ export default {
 
 .actions-cell {
   text-align: center;
+  overflow: hidden;
 }
 
 .actions-row {
-  text-align: center;
   flex: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .actions-row > button {
   margin-top: 0;
 }
 
+.actions-row > button + button {
+  margin-left: 8px;
+}
+
 .product-image {
-   height: auto;
-   width:100%;
+  height: auto;
+  width: 100%;
 }
 
 .price-cell {
