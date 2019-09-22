@@ -1,11 +1,19 @@
-# product-catalog
+# Simples CRUD Product Catalog
+
+## Project
+![alt text](doc/product-list-demo.png)
 
 ## Project setup
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Run server for development
+```
+npm run dev
+```
+
+### Hot-reloads page for development
 ```
 npm run serve
 ```
@@ -14,21 +22,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

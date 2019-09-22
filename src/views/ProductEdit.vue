@@ -50,6 +50,7 @@
             type="file"
             style="display: none;"
             @change="upload"
+            accept="image/*;capture=camera"
           >
           <div class="d-row actions a-space-between">
             <button class="flat" @click="$router.push('/products')">

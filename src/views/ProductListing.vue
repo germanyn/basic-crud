@@ -157,12 +157,8 @@ export default {
       ])
     },
     openImage(url) {
-      const image = new Image();
-      image.src = url;
-
-      const w = window.open("");
-      w.document.write(image.outerHTML);
-      window.open(image)
+      const newTab = window.open()
+      newTab.document.body.innerHTML = `<img src=${url} >`;
     },
   },
   computed: {
